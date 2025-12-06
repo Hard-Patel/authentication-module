@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PassportModule } from '@nestjs/passport';
 import { AuthController } from './controllers/auth.controller';
@@ -14,12 +14,15 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     TypeOrmModule.forFeature([User, RefreshToken]),
     PassportModule,
     JwtModule.registerAsync({
-      useFactory: () => ({
-        secret: process.env.JWT_ACCESS_SECRET,
-        signOptions: {
-          expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
-        },
-      }),
+      useFactory: (): JwtModuleOptions => {
+        const expiresIn = process.env.JWT_ACCESS_EXPIRES_IN || '15m';
+        return {
+          secret: process.env.JWT_ACCESS_SECRET || 'default-secret-change-in-production',
+          signOptions: {
+            expiresIn: expiresIn as any,
+          },
+        };
+      },
     }),
   ],
   controllers: [AuthController],

@@ -48,10 +48,11 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getProfile(@Request() req): Promise<Omit<User, 'passwordHash' | 'refreshTokens'>> {
+  async getProfile(
+    @Request() req,
+  ): Promise<Omit<User, 'passwordHash' | 'refreshTokens'>> {
     const user = req.user as User;
     const { passwordHash, refreshTokens, ...sanitized } = user;
     return sanitized;
   }
 }
-

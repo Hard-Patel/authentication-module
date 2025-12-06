@@ -1,19 +1,18 @@
 import {
+  ConflictException,
   Injectable,
   UnauthorizedException,
-  ConflictException,
-  BadRequestException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
-import { User } from '../entities/user.entity';
-import { RefreshToken } from '../entities/refresh-token.entity';
-import { UsersService } from './users.service';
-import { RegisterDto } from '../dtos/register.dto';
+import { Repository } from 'typeorm';
 import { LoginDto } from '../dtos/login.dto';
+import { RegisterDto } from '../dtos/register.dto';
+import { RefreshToken } from '../entities/refresh-token.entity';
+import { User } from '../entities/user.entity';
+import { UsersService } from './users.service';
 
 export interface TokenPayload {
   sub: string;
@@ -31,14 +30,15 @@ export interface AuthResponse {
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registerDto: RegisterDto): Promise<Omit<User, 'passwordHash' | 'refreshTokens'>> {
+  async register(
+    registerDto: RegisterDto,
+  ): Promise<Omit<User, 'passwordHash' | 'refreshTokens'>> {
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
@@ -67,7 +67,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(loginDto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      loginDto.password,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -84,7 +87,10 @@ export class AuthService {
     };
   }
 
-  async refresh(refreshTokenString: string, deviceInfo?: string): Promise<AuthResponse> {
+  async refresh(
+    refreshTokenString: string,
+    deviceInfo?: string,
+  ): Promise<AuthResponse> {
     const tokenHash = this.hashRefreshToken(refreshTokenString);
 
     const refreshTokenRecord = await this.refreshTokenRepository.findOne({
@@ -96,7 +102,10 @@ export class AuthService {
       throw new UnauthorizedException('Invalid refresh token');
     }
 
-    if (refreshTokenRecord.expiresAt && refreshTokenRecord.expiresAt < new Date()) {
+    if (
+      refreshTokenRecord.expiresAt &&
+      refreshTokenRecord.expiresAt < new Date()
+    ) {
       await this.refreshTokenRepository.remove(refreshTokenRecord);
       throw new UnauthorizedException('Refresh token expired');
     }
@@ -148,16 +157,13 @@ export class AuthService {
       roles: user.roles,
     };
 
-    const accessToken = this.jwtService.sign(payload, {
-      secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || '15m',
-    });
+    const accessToken = this.jwtService.sign(payload);
 
     const refreshToken = this.generateRefreshToken();
     const tokenHash = this.hashRefreshToken(refreshToken);
 
-    const expiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
-    const expiresAt = this.calculateExpiryDate(expiresIn);
+    const refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
+    const expiresAt = this.calculateExpiryDate(refreshExpiresIn);
 
     await this.refreshTokenRepository.save({
       userId: user.id,
@@ -209,9 +215,10 @@ export class AuthService {
     return now;
   }
 
-  private sanitizeUser(user: User): Omit<User, 'passwordHash' | 'refreshTokens'> {
+  private sanitizeUser(
+    user: User,
+  ): Omit<User, 'passwordHash' | 'refreshTokens'> {
     const { passwordHash, refreshTokens, ...sanitized } = user;
     return sanitized;
   }
 }
-
