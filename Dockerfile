@@ -3,15 +3,12 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install deps
 COPY package*.json ./
-RUN npm i
+RUN npm install
 
-# Copy source
 COPY . .
-
-# Build NestJS
 RUN npm run build
+
 
 # 2) Runtime stage
 FROM node:20-alpine
@@ -19,16 +16,20 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm i --omit=dev
+RUN npm install --omit=dev
 
-# Copy compiled code from builder
+# ✅ Copy build output
 COPY --from=builder /app/dist ./dist
+
+# ✅ Copy entrypoint correctly
+COPY entrypoint.sh ./entrypoint.sh
 
 ENV NODE_ENV=production
 ENV PORT=3000
 
-RUN npm run migration:run:prod
+# ✅ Now chmod will work
+RUN chmod +x ./entrypoint.sh
 
 EXPOSE 3000
 
-CMD ["node", "dist/main.js"]
+CMD ["./entrypoint.sh"]
