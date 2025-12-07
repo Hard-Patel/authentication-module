@@ -27,6 +27,8 @@ COPY --from=builder /app/dist ./dist
 ENV NODE_ENV=production
 ENV PORT=3000
 
+RUN npm run migration:run:prod
+
 EXPOSE 3000
 
 CMD ["node", "dist/main.js"]
