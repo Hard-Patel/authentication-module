@@ -29,7 +29,6 @@ export interface AuthResponse {
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
     private readonly usersService: UsersService,
@@ -39,6 +38,10 @@ export class AuthService {
   async register(
     registerDto: RegisterDto,
   ): Promise<Omit<User, 'passwordHash' | 'refreshTokens'>> {
+    if (!registerDto.email || !registerDto.password) {
+      throw new ConflictException('Email and password are required');
+    }
+
     const existingUser = await this.usersService.findByEmail(registerDto.email);
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
@@ -47,10 +50,10 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(registerDto.password, 10);
 
     const user = await this.usersService.create({
-      email: registerDto.email,
+      email: registerDto.email.trim().toLowerCase(),
       passwordHash,
-      firstName: registerDto.firstName,
-      lastName: registerDto.lastName,
+      firstName: registerDto.firstName?.trim() || null,
+      lastName: registerDto.lastName?.trim() || null,
       roles: ['user'], // Default role
     });
 
@@ -97,6 +100,7 @@ export class AuthService {
       where: { tokenHash, isActive: true },
       relations: ['user'],
     });
+    console.log('refreshTokenRecord: ', refreshTokenRecord);
 
     if (!refreshTokenRecord) {
       throw new UnauthorizedException('Invalid refresh token');
@@ -111,7 +115,7 @@ export class AuthService {
     }
 
     const user = refreshTokenRecord.user;
-    if (!user.isActive) {
+    if (!user || !user.isActive) {
       throw new UnauthorizedException('Account is inactive');
     }
 
@@ -132,6 +136,7 @@ export class AuthService {
 
     const refreshTokenRecord = await this.refreshTokenRepository.findOne({
       where: { tokenHash, isActive: true },
+      relations: ['user'],
     });
 
     if (refreshTokenRecord) {
@@ -165,7 +170,7 @@ export class AuthService {
     const refreshExpiresIn = process.env.JWT_REFRESH_EXPIRES_IN || '7d';
     const expiresAt = this.calculateExpiryDate(refreshExpiresIn);
 
-    await this.refreshTokenRepository.save({
+    await this.refreshTokenRepository.manager.save(RefreshToken, {
       userId: user.id,
       tokenHash,
       expiresAt,
