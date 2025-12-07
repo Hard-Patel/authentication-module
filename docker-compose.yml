@@ -19,18 +19,18 @@ services:
       timeout: 5s
       retries: 5
 
-  api:
-    build: .
-    container_name: ecommerce-api
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    ports:
-      - '3000:3000'
+  # api:
+  #   build: .
+  #   container_name: ecommerce-api
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   ports:
+  #     - '3000:3000'
 
-    env_file:
-      - .env
+  #   env_file:
+  #     - .env
 
 volumes:
   postgres_data:
