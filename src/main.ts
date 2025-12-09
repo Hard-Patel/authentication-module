@@ -21,7 +21,9 @@ async function bootstrap() {
   // Swagger/OpenAPI configuration
   const config = new DocumentBuilder()
     .setTitle('Auth API')
-    .setDescription('Authentication service documentation for the ecommerce application')
+    .setDescription(
+      'Authentication service documentation for the ecommerce application',
+    )
     .setVersion('1.0')
     .addBearerAuth(
       {
@@ -36,6 +38,7 @@ async function bootstrap() {
     )
     .addTag('Auth', 'Authentication endpoints')
     .addTag('Clients', 'OAuth client management endpoints')
+    .addTag('Device', 'BioAuth Mobile users management endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -46,7 +49,11 @@ async function bootstrap() {
   });
 
   await app.listen(process.env.PORT ?? 3000);
-  console.log(`Application is running on: http://localhost:${process.env.PORT ?? 3000}`);
-  console.log(`Swagger documentation available at: http://localhost:${process.env.PORT ?? 3000}/api/docs`);
+  console.log(
+    `Application is running on: http://localhost:${process.env.PORT ?? 3000}`,
+  );
+  console.log(
+    `Swagger documentation available at: http://localhost:${process.env.PORT ?? 3000}/api/docs`,
+  );
 }
 bootstrap();
