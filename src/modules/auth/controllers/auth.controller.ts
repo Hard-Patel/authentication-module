@@ -1,30 +1,29 @@
 import {
-  Controller,
-  Post,
-  Get,
   Body,
-  UseGuards,
-  Request,
+  Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Post,
+  Request,
+  UseGuards,
 } from '@nestjs/common';
 import {
-  ApiTags,
+  ApiBearerAuth,
   ApiOperation,
   ApiResponse,
-  ApiBearerAuth,
-  ApiBody,
+  ApiTags,
 } from '@nestjs/swagger';
-import { AuthService } from '../services/auth.service';
-import { RegisterDto } from '../dtos/register.dto';
-import { LoginDto } from '../dtos/login.dto';
-import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { User } from '../../entities/user.entity';
 import { LoginResponseDto } from '../dtos/login-response.dto';
-import { RefreshResponseDto } from '../dtos/refresh-response.dto';
+import { LoginDto } from '../dtos/login.dto';
 import { LogoutResponseDto } from '../dtos/logout-response.dto';
+import { RefreshResponseDto } from '../dtos/refresh-response.dto';
+import { RefreshTokenDto } from '../dtos/refresh-token.dto';
+import { RegisterDto } from '../dtos/register.dto';
 import { SanitizedUserDto } from '../dtos/sanitized-user.dto';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
-import { User } from '../entities/user.entity';
+import { AuthService } from '../services/auth.service';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -58,7 +57,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Login user',
-    description: 'Authenticates user and returns access token, refresh token, and user information',
+    description:
+      'Authenticates user and returns access token, refresh token, and user information',
   })
   @ApiResponse({
     status: 200,
@@ -82,7 +82,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Refresh access token',
-    description: 'Generates a new access token and refresh token pair using a valid refresh token',
+    description:
+      'Generates a new access token and refresh token pair using a valid refresh token',
   })
   @ApiResponse({
     status: 200,
@@ -106,7 +107,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Logout user',
-    description: 'Invalidates the refresh token, effectively logging out the user',
+    description:
+      'Invalidates the refresh token, effectively logging out the user',
   })
   @ApiResponse({
     status: 200,

@@ -1,12 +1,11 @@
 import 'reflect-metadata';
-
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
-  UpdateDateColumn,
+  Entity,
   Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 export type LoginTxStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED';

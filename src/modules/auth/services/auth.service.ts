@@ -10,8 +10,8 @@ import * as crypto from 'crypto';
 import { Repository } from 'typeorm';
 import { LoginDto } from '../dtos/login.dto';
 import { RegisterDto } from '../dtos/register.dto';
-import { RefreshToken } from '../entities/refresh-token.entity';
-import { User } from '../entities/user.entity';
+import { RefreshToken } from '../../entities/refresh-token.entity';
+import { User } from '../../entities/user.entity';
 import { UsersService } from './users.service';
 
 export interface TokenPayload {

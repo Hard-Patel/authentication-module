@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 
 import { RefreshToken } from './refresh-token.entity';
+import { Client } from './client.entity';
 
 @Entity('users')
 export class User {
@@ -50,4 +51,7 @@ export class User {
     cascade: true,
   })
   refreshTokens: RefreshToken[];
+
+  @OneToMany(() => Client, (client) => client.owner)
+  clients?: Client[];
 }
