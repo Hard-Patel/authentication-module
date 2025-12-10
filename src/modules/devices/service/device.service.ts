@@ -89,7 +89,7 @@ export class DevicesService {
   }
 
   async findByDeviceId(deviceId: string) {
-    return this.deviceRepo.findOne({ where: { deviceId } });
+    return this.deviceRepo.findOne({ where: { id: deviceId } });
   }
 
   async revokeForUser(userId: string, deviceId: string) {

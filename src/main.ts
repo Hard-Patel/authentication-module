@@ -39,6 +39,7 @@ async function bootstrap() {
     .addTag('Auth', 'Authentication endpoints')
     .addTag('Clients', 'OAuth client management endpoints')
     .addTag('Device', 'BioAuth Mobile users management endpoints')
+    .addTag('Public Keys', 'Public Key management endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from '../modules/entities/user.entity';
-import { RefreshToken } from '../modules/entities/refresh-token.entity';
+import { PublicKey } from 'src/modules/entities/public-key.entity';
 import { Client } from '../modules/entities/client.entity';
 import { Device } from '../modules/entities/device.entity';
+import { RefreshToken } from '../modules/entities/refresh-token.entity';
+import { User } from '../modules/entities/user.entity';
 
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -14,7 +15,7 @@ const isProd = process.env.NODE_ENV === 'production';
         ? {
             type: 'postgres',
             url: process.env.DATABASE_URL,
-            entities: [User, RefreshToken, Client, Device],
+            entities: [User, RefreshToken, Client, Device, PublicKey],
             synchronize: false,
             logging: false,
             migrations: [__dirname + '/../migrations/*{.ts,.js}'],
@@ -27,7 +28,7 @@ const isProd = process.env.NODE_ENV === 'production';
             username: process.env.DATABASE_USERNAME || 'postgres',
             password: process.env.DATABASE_PASSWORD || 'postgres',
             database: process.env.DATABASE_NAME || 'auth_db',
-            entities: [User, RefreshToken, Client, Device],
+            entities: [User, RefreshToken, Client, Device, PublicKey],
             synchronize: false,
             logging: process.env.NODE_ENV === 'development',
             migrations: [__dirname + '/../migrations/*{.ts,.js}'],
