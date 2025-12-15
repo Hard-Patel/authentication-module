@@ -13,7 +13,7 @@ import { ApproveLoginDto } from '../dto/approve-login.dto';
 import { RejectLoginDto } from '../dto/reject-login.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('mobile-auth')
+@ApiTags('Mobile Auth')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('mobile/login-requests')

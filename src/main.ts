@@ -41,6 +41,9 @@ async function bootstrap() {
     .addTag('Device', 'BioAuth Mobile users management endpoints')
     .addTag('Public Keys', 'Public Key management endpoints')
     .addTag('Login Transaction', 'Login transactions management endpoints')
+    .addTag('Mobile Auth', 'Mobile approve/reject login transaction endpoints')
+    .addTag('External Account (Client)', 'Client - Manage external acccounts for user endpoints')
+    .addTag('External Account (Mobile)', 'Mobile - Manage external acccounts for user endpoints')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

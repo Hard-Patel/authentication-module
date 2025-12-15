@@ -7,7 +7,12 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBasicAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 import { ClientCredentialsGuard } from 'src/modules/auth/guards/client-credentials.guard';
 import { ExchangeAuthCodeDto } from '../dto/exchange-auth.dto';
@@ -18,6 +23,7 @@ import { LoginTransactionsService } from '../service/login-transaction.service';
 
 @ApiTags('Login Transaction')
 @UseGuards(ClientCredentialsGuard)
+@ApiBasicAuth('client-basic')
 @Controller('clients/login')
 export class LoginTransactionsController {
   constructor(private readonly txService: LoginTransactionsService) {}
