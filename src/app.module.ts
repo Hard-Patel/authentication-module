@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClientsModule } from './modules/clients/client.module';
 import { DevicesModule } from './modules/devices/device.module';
+import { LoginTransactionsModule } from './modules/login-transactions/login-transaction.module';
 import { PublicKeysModule } from './modules/public-key/public-key.module';
 
 @Module({
@@ -14,6 +15,7 @@ import { PublicKeysModule } from './modules/public-key/public-key.module';
     ClientsModule,
     DevicesModule,
     PublicKeysModule,
+    LoginTransactionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

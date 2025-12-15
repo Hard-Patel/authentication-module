@@ -8,14 +8,25 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-export type LoginTxStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'EXPIRED';
+export enum LoginTxStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  EXPIRED = 'EXPIRED',
+  USED = 'USED',
+}
 
 @Entity('login_transactions')
 @Index(['clientId', 'status'])
 @Index(['expiresAt'])
+@Index(['txId'])
 export class LoginTransaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  // public transaction id used by clients (safe to expose)
+  @Column({ type: 'varchar', length: 128, unique: true })
+  txId: string;
 
   // client initiating the login (clientId from clients table)
   @Column({ type: 'varchar', length: 100 })
@@ -41,12 +52,12 @@ export class LoginTransaction {
   @Column({ type: 'timestamptz' })
   expiresAt: Date;
 
-  // optional: one-time auth code produced when approved (store hashed if you store it)
+  // optional: one-time auth code produced when approved (store hashed)
   @Column({ type: 'varchar', length: 255, nullable: true })
   authCodeHash?: string | null;
 
-  // optional: deviceId used to approve (for audit)
-  @Column({ type: 'varchar', length: 255, nullable: true })
+  // optional: device id used to approve (store DB device UUID for relational integrity)
+  @Column({ type: 'uuid', nullable: true })
   approvedByDeviceId?: string | null;
 
   // optional metadata: IP, user agent, redirect_uri etc.

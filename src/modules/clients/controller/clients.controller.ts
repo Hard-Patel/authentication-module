@@ -19,7 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/modules/auth/guards/jwt-auth.guard';
-import { ClientCredentialsGuard } from '../../../guards/client-credentials.guard';
+import { ClientCredentialsGuard } from '../../auth/guards/client-credentials.guard';
 import { ClientResponseDto } from '../dto/client-response.dto';
 import { CreateClientDto } from '../dto/create-client.dto';
 import { ClientsService } from '../service/clients.service';
