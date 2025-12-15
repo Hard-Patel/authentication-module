@@ -200,4 +200,16 @@ export class LoginTransactionsService {
   async findByTxId(txId: string) {
     return this.repo.findOne({ where: { txId } });
   }
+
+  async findPendingForUser(userId: string) {
+    return this.repo.find({
+      where: {
+        authUserId: userId,
+        status: LoginTxStatus.PENDING,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
+    });
+  }
 }
