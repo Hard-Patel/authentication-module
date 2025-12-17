@@ -1,20 +1,20 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
   Param,
-  Body,
+  Post,
   Request,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { MobileAuthService } from '../service/mobile-auth.service';
-import { ApproveLoginDto } from '../dto/approve-login.dto';
-import { RejectLoginDto } from '../dto/reject-login.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { ApproveLoginDto } from '../dto/approve-login.dto';
+import { TestSignDto } from '../dto/test-sign.dto';
+import { MobileAuthService } from '../service/mobile-auth.service';
 
 @ApiTags('Mobile Auth')
-@ApiBearerAuth()
+@ApiBearerAuth('JWT-auth')
 @UseGuards(JwtAuthGuard)
 @Controller('mobile/login-requests')
 export class MobileAuthController {
@@ -37,5 +37,10 @@ export class MobileAuthController {
   @Post(':txId/reject')
   async reject(@Request() req, @Param('txId') txId: string) {
     return this.service.reject(req.user.id, txId);
+  }
+
+  @Post('sign')
+  signForTesting(@Body() dto: TestSignDto) {
+    return this.service.signPayloadForTesting(dto.payload);
   }
 }

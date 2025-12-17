@@ -40,6 +40,7 @@ export class PublicKeysController {
     @Body() dto: RegisterPublicKeyDto,
   ) {
     const userId = req.user.id;
+    console.log('deviceId, dto: ', deviceId, dto);
     const pk = await this.pkService.register(userId, deviceId, dto);
     return plainToInstance(PublicKeyResponseDto, pk);
   }

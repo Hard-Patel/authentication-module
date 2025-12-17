@@ -23,32 +23,36 @@ export class PublicKeysService {
 
   /** Register a public key for a device. Ensures device exists and belongs to user. */
   async register(userId: string, deviceId: string, dto: RegisterPublicKeyDto) {
-    const device = await this.devicesService.findByDeviceId(deviceId);
-    if (!device) throw new NotFoundException('Device not found');
-    if (device.userId !== userId)
-      throw new NotFoundException('Device not found for current user');
+    try {
+      const device = await this.devicesService.findByDeviceId(deviceId);
+      if (!device) throw new NotFoundException('Device not found');
+      if (device.userId !== userId)
+        throw new NotFoundException('Device not found for current user');
 
-    // ensure keyId unique per user+device — generate if missing
-    const keyId = dto.keyId ?? uuidv4();
+      // ensure keyId unique per user+device — generate if missing
+      const keyId = dto.keyId ?? uuidv4();
 
-    // check uniqueness (userId+deviceId+keyId) to give a nice error before DB unique violation
-    const existing = await this.pkRepo.findOne({
-      where: { userId, deviceId, keyId },
-    });
-    if (existing)
-      throw new ConflictException('keyId already exists for this device');
+      // check uniqueness (userId+deviceId+keyId) to give a nice error before DB unique violation
+      const existing = await this.pkRepo.findOne({
+        where: { userId, deviceId, keyId },
+      });
+      if (existing)
+        throw new ConflictException('keyId already exists for this device');
 
-    const pk = this.pkRepo.create({
-      keyId,
-      userId,
-      deviceId,
-      publicKey: dto.publicKey,
-      algorithm: dto.algorithm,
-      isActive: true,
-      metadata: dto.metadata ?? null,
-    });
+      const pk = this.pkRepo.create({
+        keyId,
+        userId,
+        deviceId,
+        publicKey: dto.publicKey,
+        algorithm: dto.algorithm,
+        isActive: true,
+        metadata: dto.metadata ?? null,
+      });
 
-    return this.pkRepo.save(pk);
+      return this.pkRepo.save(pk);
+    } catch (error) {
+      console.log('error: ', error);
+    }
   }
 
   /** Soft-revoke by keyId (ensures ownership) */

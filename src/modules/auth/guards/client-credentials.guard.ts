@@ -32,6 +32,7 @@ export class ClientCredentialsGuard implements CanActivate {
       throw new UnauthorizedException('Invalid Basic auth format');
 
     const client = await this.clientsService.findByClientId(clientId);
+    
     if (!client) throw new UnauthorizedException('Unknown client');
 
     const valid = await this.clientsService.verifySecret(client, clientSecret);
